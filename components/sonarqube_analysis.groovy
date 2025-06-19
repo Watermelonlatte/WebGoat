@@ -32,7 +32,7 @@ withSonarQubeEnv(env.SONARQUBE_ENV) {
         sh """
         curl -s -H "Authorization: Bearer $SONAR_AUTH_TOKEN" \\
             "$SONAR_HOST_URL/api/hotspots/search?projectKey=webgoat&status=TO_REVIEW" \\
-            -o sonar_hotspots_${timestamp}.json
+            -o sonar_issues_${timestamp}.json
         """
     }
 }
