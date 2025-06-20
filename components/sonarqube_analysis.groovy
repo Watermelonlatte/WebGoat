@@ -22,17 +22,10 @@ withSonarQubeEnv(env.SONARQUBE_ENV) {
         def timestamp = sh(script: "date +%F_%H-%M-%S", returnStdout: true).trim()
         env.REPORT_FILE = "sonar_hotspot_${timestamp}.json"
 
-        // sh """
-        // curl -s -H "Authorization: Bearer $SONAR_AUTH_TOKEN" \\
-        //   "$SONAR_HOST_URL/api/issues/search?componentKeys=webgoat" \\
-        //   -o ${env.REPORT_FILE}
-        // """
-
-        // Hotspot 결과 저장
         sh """
-        curl -v -H "Authorization: Bearer $SONAR_AUTH_TOKEN" \\
-            "$SONAR_HOST_URL/api/hotspots/search?projectKey=webgoat" \\
-            -o ${env.REPORT_FILE}
+        curl -s -H "Authorization: Bearer $SONAR_AUTH_TOKEN" \\
+          "$SONAR_HOST_URL/api/issues/search?componentKeys=webgoat" \\
+          -o ${env.REPORT_FILE}
         """
     }
 }
