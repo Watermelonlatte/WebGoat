@@ -1,98 +1,43 @@
 pipeline {
-    agent { label 'master' }
+    agent any
 
     environment {
-        JAVA_HOME      = "/usr/lib/jvm/java-17-amazon-corretto.x86_64"
-        PATH           = "${env.JAVA_HOME}/bin:${env.PATH}"
-        SSH_CRED_ID    = "WH1_key"
-        
-
+        AWS_REGION = 'ap-northeast-2'
+        ECR_REPO = '535052053335.dkr.ecr.ap-northeast-2.amazonaws.com/wh_1/devpos'
+        IMAGE_TAG = 'latest'
     }
 
     stages {
-        stage('📦 Checkout') {
+        stage('Checkout') {
             steps {
                 checkout scm
             }
-        }       
+        }
 
-        stage('🧪 SonarQube Analysis') {
+        stage('Build Docker Image') {
             steps {
-                script {
-                    load 'components/sonarqube_analysis.groovy'
+                sh 'docker build -t $ECR_REPO:$IMAGE_TAG .'
+            }
+        }
+
+        stage('Login to AWS ECR') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'demo-admin-user', usernameVariable: 'AWS_ACCESS_KEY_ID', passwordVariable: 'AWS_SECRET_ACCESS_KEY')]) {
+                    sh '''
+                        aws configure set aws_access_key_id $AWS_ACCESS_KEY_ID
+                        aws configure set aws_secret_access_key $AWS_SECRET_ACCESS_KEY
+                        aws configure set region $AWS_REGION
+
+                        aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REPO
+                    '''
                 }
             }
         }
 
-        stage('🔨 Build JAR') {
+        stage('Push to ECR') {
             steps {
-                sh 'components/scripts/Build_JAR.sh'
+                sh 'docker push $ECR_REPO:$IMAGE_TAG'
             }
-        }
-
-        stage('🐳 Docker Build') {
-            steps {
-                sh 'components/scripts/Docker_Build.sh'
-            }
-        }
-
-        stage('🔐 ECR Login') {
-            steps {
-                sh 'components/scripts/ECR_Login.sh'
-            }
-        }
-
-        stage('🚀 Push to ECR') {
-            steps {
-                sh 'components/scripts/Push_to_ECR.sh'
-            }
-        }
-        stage('🔍 ZAP 스캔 및 SecurityHub 전송') {
-             agent { label 'DAST' }
-            steps {
-                sh 'components/scripts/DAST_Zap_Scan.sh'
-            }
-        }
-
-                stage('🧩 Generate taskdef.json') {
-                    steps {
-                        script {
-                            def runTaskDefGen = load 'components/functions/generateTaskDef.groovy'
-                            runTaskDefGen(env)
-                        }
-                    }
-                }
-
-                stage('📄 Generate appspec.yaml') {
-                    steps {
-                        script {
-                            def runAppSpecGen = load 'components/functions/generateAppspecAndWrite.groovy'
-                            runAppSpecGen(env.REGION)
-                        }
-                    }
-                }
-
-                stage('📦 Bundle for CodeDeploy') {
-                    steps {
-                        sh 'components/scripts/Bundle_for_CodeDeploy.sh'
-                    }
-                }
-
-                stage('🚀 Deploy via CodeDeploy') {
-                    steps {
-                        sh 'components/scripts/Deploy_via_CodeDeploy.sh'
-                    }
-                }
-            }
-        }
-
-     post {
-        always {
-        success {
-            echo "✅ Successfully built, pushed, and deployed!"
-        }
-        failure {
-            echo "❌ Build or deployment failed. Check logs!"
         }
     }
 }
