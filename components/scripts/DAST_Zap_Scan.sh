@@ -8,7 +8,7 @@ BUILD_NUMBER="${BUILD_NUMBER:-1}"
 REGION="${REGION:-ap-northeast-2}"
 ECR_REPO="${ECR_REPO}"
 ZAP_SCRIPT="${ZAP_SCRIPT:-zap_webgoat.sh}"
-S3_BUCKET="${S3_BUCKET:-my-bucket}"
+SS3_BUCKET="${S3_BUCKET:-testdast}"
 
 # 동적 변수 설정
 containerName="${CONTAINER_NAME}-${BUILD_NUMBER}"
