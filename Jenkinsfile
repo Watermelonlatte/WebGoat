@@ -2,17 +2,10 @@ pipeline {
     agent { label 'master' }
 
     environment {
-        ECR_REPO       = "535052053335.dkr.ecr.ap-northeast-2.amazonaws.com/wh_1/devpos"
-        IMAGE_TAG      = "${env.BUILD_NUMBER}"
         JAVA_HOME      = "/usr/lib/jvm/java-17-amazon-corretto.x86_64"
         PATH           = "${env.JAVA_HOME}/bin:${env.PATH}"
-        REGION         = "ap-northeast-2"
-        DAST_HOST      = "172.31.8.217"
-        ZAP_SCRIPT     = "zap_webgoat.sh"
-        CONTAINER_NAME = "webgoat-test"
         SSH_CRED_ID    = "WH1_key"
-        S3_BUCKET      = "testdast"
-	EC2_INSTANCE_ID = "i-08b682cce060eb8de"
+        
 
     }
 
