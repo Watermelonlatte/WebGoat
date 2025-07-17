@@ -52,12 +52,12 @@ detect_java_version() {
 
 # CVSS 점검 함수
 check_cvss() {
-    local REPO_NAME="$1"
-    local VERSION="$2"
+    local PROJECT_UUID="$1"
+    local DT_API_KEY="$2"
+    local DT_URL="$3"
 
     # CVSS 점검 로직 (Python 스크립트 호출)
-    // 이부분 인자값 고쳐야 함 
-    python3 /home/ec2-user/check_cvss.py "$REPO_NAME" "$VERSION" "$DT_URL" || {
+    python3 /home/ec2-user/check_cvss.py "$PROJECT_UUID" "$DT_API_KEY" "$DT_URL" || {
         echo "❌ CVSS 9 이상 취약점 발견. SBOM 업로드를 중단합니다."
         return 1
     }
@@ -90,7 +90,7 @@ upload_sbom() {
     echo "🚀 SBOM 업로드 시작: $SBOM_FILE (projectVersion: $PROJECT_VERSION)"
 
     # CVSS 점검 함수 호출 (한 번만 호출)
-    check_cvss "$REPO_NAME" "$VERSION" || return 1
+    check_cvss "$PROJECT_UUID" "$DT_API_KEY" "$DT_URL" || return 1
 
     # SBOM 업로드
     curl -X POST http://localhost:8080/api/v1/bom \
