@@ -1,5 +1,6 @@
 //수정중  8, project uuid 넘기는 부분 추가 -> 했다가 다시 제거 
 // 테스트용, check_cvss_and_notify_1.py 호출 ver
+// [DEBUG] 메시지는 향후 모두 삭제 예정 
 
 #!/bin/bash
 
@@ -141,7 +142,7 @@ upload_sbom() {
     log_message "[⏳] Dependency-Track 분석 완료까지 대기 중..."
     sleep 30
     
-    # 이제 get_project_uuid()를 사용하지 않고 바로 check_cvss() 호출
+    # PROJECT_UUID는 이제 check_cvss_and_notify.py에서 처리하므로 넘길 필요 없음
     log_message "[DEBUG] check_cvss 함수 존재 확인"
     if type check_cvss &>/dev/null; then
         log_message "[DEBUG] check_cvss 함수 발견됨"
@@ -151,11 +152,12 @@ upload_sbom() {
     fi
     
     log_message "[DEBUG] check_cvss 호출 시작"
-    check_cvss "$PROJECT_UUID" "$DT_API_KEY" "$DT_URL" "$REPO_NAME" || {
-        log_message "❌ [Debug] CVSS 점검 실패 - 하지만 SBOM 업로드는 완료됨"
+    check_cvss "$DT_API_KEY" "$DT_URL" "$REPO_NAME" || {
+        log_message "❌ [Debug] CVSS 점검 실패"
         return 1
     }
     
     log_message "[DEBUG] check_cvss 완료"
     log_message "✅ SBOM 업로드 및 CVSS 점검 완료"
 }
+
