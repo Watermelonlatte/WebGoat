@@ -106,7 +106,8 @@ echo "[✅] SBOM 파이프라인 완료: $REPO_NAME"
 
 # CVSS 점검 실행
 echo "[DEBUG] run_cvss_check 함수 호출"
-run_cvss_check "$REPO_NAME" "$VERSION" "$DT_API_KEY" "http://localhost:8080" || {
+check_cvss "$REPO_NAME" "$VERSION"
+ || {
     echo "❌ CVSS 점검 실패"
 }
 
