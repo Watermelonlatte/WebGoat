@@ -151,8 +151,15 @@ check_cvss() {
     python3 /home/ec2-user/check_cvss_and_notify_2.py "$REPO_NAME" "$PROJECT_VERSION" "$DT_API_KEY" "$DT_URL"
     local exit_code=$?
 
-    ...
+    if [[ $exit_code -ne 0 ]]; then
+        log_message "[❌] check_cvss_and_notify 실행 실패 (exit code: $exit_code)"
+        return $exit_code
+    else
+        log_message "[✅] check_cvss_and_notify 실행 성공"
+        return 0
+    fi
 }
+
 
 
 
