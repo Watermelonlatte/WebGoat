@@ -52,19 +52,34 @@ pipeline {
         //        }
         //    }
         //}
-         stage('🚀 Generate SBOM via CDXGEN Docker') {
+        // stage('🚀 Generate SBOM via CDXGEN Docker') {
+          //  agent { label 'SCA' }
+           // steps {
+             //   script {
+               //     def repoUrl = scm.userRemoteConfigs[0].url
+                 //   def repoName = repoUrl.tokenize('/').last().replace('.git', '')
+        //
+                    // 백그라운드로 실행 (nohup)
+                   // sh """
+                     //    nohup /home/ec2-user/run_sbom_pipeline1.sh '${repoUrl}' '${repoName}' '${env.BUILD_NUMBER}' > /home/ec2-user/logs/sbom_${env.BUILD_NUMBER}.log 2>&1 &
+          //          """
+        //
+            //    }
+          //  }
+        //}
+
+        stage('🚀 Generate SBOM via CDXGEN Docker') {
             agent { label 'SCA' }
             steps {
                 script {
                     def repoUrl = scm.userRemoteConfigs[0].url
                     def repoName = repoUrl.tokenize('/').last().replace('.git', '')
         
-                    // 백그라운드로 실행 (nohup)
+                     백그라운드로 실행 (nohup)
                     sh """
-                         nohup /home/ec2-user/run_sbom_pipeline1.sh '${repoUrl}' '${repoName}' '${env.BUILD_NUMBER}' > /home/ec2-user/logs/sbom_${env.BUILD_NUMBER}.log 2>&1 &
+                         nohup bash components/scripts/run_sbom_1.sh '${repoUrl}' '${repoName}' '${env.BUILD_NUMBER}' > /home/ec2-user/logs/sbom_${env.BUILD_NUMBER}.log 2>&1 &
                     """
-        
-                }
+               }
             }
         }
 
