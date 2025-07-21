@@ -39,7 +39,7 @@ else
   echo "[⚠️] DYNAMIC_IMAGE_TAG가 비어있거나 JSON 파일이 존재하지 않음"
 fi
 
-S3_BUCKET="ss-bucket-0305"
+S3_BUCKET="sonarqube-sast-bucket-wh-whs"
 echo "[*] S3 업로드 시작..."
 aws s3 cp "$REPORT_FILE" "s3://${S3_BUCKET}/sonarqube-reports/$REPORT_FILE" --region ap-northeast-2 && \
   echo "✅ S3 업로드 완료" || echo "⚠️ S3 업로드 실패 (무시)"
